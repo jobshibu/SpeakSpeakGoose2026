@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ESL Pronunciation Coach — Dev UI</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: monospace;
+      background: #0f0f0f;
+      color: #d4d4d4;
+      padding: 24px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    h1 { color: #7ec8e3; margin-bottom: 20px; font-size: 1.4rem; }
+    h2 { color: #a8d8a8; margin: 28px 0 12px; font-size: 1.1rem; border-bottom: 1px solid #333; padding-bottom: 6px; }
+
+    section { margin-bottom: 28px; }
+
+    label { display: block; margin-bottom: 4px; font-size: 0.85rem; color: #aaa; }
+
+    input, select, textarea {
+      background: #1e1e1e;
+      border: 1px solid #444;
+      color: #d4d4d4;
+      padding: 6px 10px;
+      border-radius: 4px;
+      font-family: monospace;
+      font-size: 0.9rem;
+      width: 100%;
+      margin-bottom: 8px;
+    }
+
+    input[type="password"] { letter-spacing: 2px; }
+
+    button {
+      background: #2a5298;
+      color: #fff;
+      border: none;
+      padding: 7px 18px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: monospace;
+      font-size: 0.9rem;
+      margin-right: 8px;
+      margin-bottom: 6px;
+    }
+    button:hover  { background: #3a6bc8; }
+    button:active { background: #1a3f7a; }
+    button.danger { background: #8b2020; }
+    button.danger:hover { background: #b33030; }
+    button.success { background: #1e6b3a; }
+    button.success:hover { background: #27924e; }
+
+    .row { display: flex; gap: 8px; align-items: flex-start; flex-wrap: wrap; }
+    .row input { flex: 1; margin-bottom: 0; }
+    .row select { flex: 1; margin-bottom: 0; }
+
+    .badge {
+      display: inline-block;
+      background: #2c2c2c;
+      border: 1px solid #555;
+      border-radius: 12px;
+      padding: 2px 10px;
+      font-size: 0.78rem;
+      color: #aaa;
+      margin: 2px;
+    }
+
+    .status {
+      font-size: 0.85rem;
+      padding: 6px 10px;
+      border-radius: 4px;
+      margin-bottom: 8px;
+    }
+    .status.ok    { background: #1a3a1a; color: #6dcd6d; border: 1px solid #2d6b2d; }
+    .status.error { background: #3a1a1a; color: #cd6d6d; border: 1px solid #6b2d2d; }
+
+    pre.response {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 4px;
+      padding: 12px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+      font-size: 0.82rem;
+      color: #b8d4e8;
+      max-height: 360px;
+      overflow-y: auto;
+      margin-top: 8px;
+    }
+
+    .word-list { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0; }
+    .word-list li {
+      background: #1e2a3a;
+      border: 1px solid #2a4a7a;
+      border-radius: 4px;
+      padding: 4px 12px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .word-list li:hover  { background: #2a3a5a; }
+    .word-list li.active { background: #2a5298; border-color: #4a72c8; color: #fff; }
+    .word-list li.phrase {
+      background: #2a1e3a;
+      border-color: #6a4a9a;
+      font-style: italic;
+    }
+    .word-list li.phrase::after {
+      content: ' ✦';
+      font-size: 0.7rem;
+      color: #a78bda;
+      font-style: normal;
+    }
+    #progression-status {
+      font-size: 0.82rem;
+      color: #888;
+      margin-bottom: 6px;
+    }
+
+    #current-word-display {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #7ec8e3;
+      margin: 8px 0;
+      min-height: 2rem;
+    }
+
+    #ipa-display {
+      font-size: 1rem;
+      color: #f0c040;
+      margin-bottom: 8px;
+    }
+
+    #attempt-counter {
+      display: inline-block;
+      background: #2c2c2c;
+      border: 1px solid #555;
+      border-radius: 4px;
+      padding: 4px 12px;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+    }
+
+    #record-btn {
+      background: #1e6b3a;
+      transition: background 0.2s;
+    }
+    #record-btn.recording {
+      background: #8b2020;
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.7; }
+    }
+
+    #token-display {
+      font-size: 0.78rem;
+      color: #777;
+      word-break: break-all;
+      margin-top: 6px;
+    }
+
+    audio { display: block; margin-top: 8px; width: 100%; }
+  </style>
+</head>
+<body>
+
+<h1>ESL Pronunciation Coach — Dev Testing UI</h1>
+
+<!-- ─── AUTH ───────────────────────────────────────────────────────────────── -->
+<section id="auth-section">
+  <h2>1. Auth</h2>
+  <div class="row">
+    <div style="flex:1">
+      <label>Email</label>
+      <input id="auth-email" type="email" placeholder="user@example.com" />
+    </div>
+    <div style="flex:1">
+      <label>Password</label>
+      <input id="auth-password" type="password" placeholder="min 8 chars" />
+    </div>
+  </div>
+  <button onclick="register()">Register</button>
+  <button onclick="login()">Login</button>
+  <div id="auth-status"></div>
+  <div id="token-display"></div>
+  <pre id="auth-response" class="response" style="display:none"></pre>
+</section>
+
+<!-- ─── WORD BANK ──────────────────────────────────────────────────────────── -->
+<section id="wordbank-section">
+  <h2>2. Word Bank</h2>
+  <div class="row">
+    <div style="flex:1">
+      <label>Level</label>
+      <select id="level-select">
+        <option value="easy">easy</option>
+        <option value="medium">medium</option>
+        <option value="hard">hard</option>
+      </select>
+    </div>
+    <div style="flex:1">
+      <label>User ID (auto-filled after login)</label>
+      <input id="user-id-input" type="text" placeholder="UUID" />
+    </div>
+  </div>
+  <button onclick="loadWords()">Load Words</button>
+  <div id="progression-status"></div>
+  <ul id="word-list" class="word-list"></ul>
+  <pre id="words-response" class="response" style="display:none"></pre>
+</section>
+
+<!-- ─── TTS ───────────────────────────────────────────────────────────────── -->
+<section id="tts-section">
+  <h2>3. Text-to-Speech</h2>
+  <label>Text to speak</label>
+  <input id="tts-input" type="text" placeholder="Type a word or sentence…" />
+  <div class="row">
+    <div style="flex:1">
+      <label>Speed (0.5 – 2.0)</label>
+      <input id="tts-speed" type="number" min="0.5" max="2.0" step="0.05" value="0.85" />
+    </div>
+    <div style="align-self:flex-end; padding-bottom:8px">
+      <button onclick="playTTS()">Play</button>
+    </div>
+  </div>
+  <audio id="tts-audio" controls style="display:none"></audio>
+  <pre id="tts-response" class="response" style="display:none"></pre>
+</section>
+
+<!-- ─── RECORD + ATTEMPT ──────────────────────────────────────────────────── -->
+<section id="attempt-section">
+  <h2>4. Record + Attempt</h2>
+  <div id="current-word-display">— select a word above —</div>
+  <div id="ipa-display"></div>
+  <div id="attempt-counter">Attempt: <span id="attempt-num">1</span> / 3</div>
+  <br />
+  <button id="record-btn" onmousedown="startRecording()" onmouseup="stopRecording()" ontouchstart="startRecording()" ontouchend="stopRecording()">
+    Hold to Record
+  </button>
+  <button onclick="submitAttempt()">Submit Attempt</button>
+  <button onclick="resetAttempts()" class="danger">Reset Attempts</button>
+  <div id="recording-status"></div>
+  <audio id="recorded-audio" controls style="display:none"></audio>
+  <div id="hint-box" style="display:none; margin-top:10px;">
+    <div id="hint-text"  style="background:#1a2a1a; border:1px solid #2d6b2d; border-radius:4px; padding:8px 12px; margin-bottom:6px; color:#8ddd8d; font-size:0.9rem;"></div>
+    <div id="tongue-text" style="background:#1a1a2e; border:1px solid #2d2d6b; border-radius:4px; padding:8px 12px; margin-bottom:6px; color:#8d8ddd; font-size:0.9rem;"></div>
+    <div id="lips-text"   style="background:#2e1a1a; border:1px solid #6b2d2d; border-radius:4px; padding:8px 12px; margin-bottom:6px; color:#dd8d8d; font-size:0.9rem;"></div>
+  </div>
+  <pre id="attempt-response" class="response" style="display:none"></pre>
+</section>
+
+<!-- ─── STATS ─────────────────────────────────────────────────────────────── -->
+<section id="stats-section">
+  <h2>5. Stats</h2>
+  <div class="row">
+    <div style="flex:1">
+      <label>User ID (auto-filled after login)</label>
+      <input id="stats-user-id" type="text" placeholder="UUID" />
+    </div>
+    <div style="align-self:flex-end; padding-bottom:8px">
+      <button onclick="loadStats()">Load Stats</button>
+    </div>
+  </div>
+  <pre id="stats-response" class="response" style="display:none"></pre>
+</section>
+
+<!-- ─── GENERATE WORDS ────────────────────────────────────────────────────── -->
+<section id="generate-section">
+  <h2>6. Generate Words (AI)</h2>
+  <div class="row">
+    <div style="flex:1">
+      <label>Level</label>
+      <select id="gen-level-select">
+        <option value="easy">easy</option>
+        <option value="medium" selected>medium</option>
+        <option value="hard">hard</option>
+      </select>
+    </div>
+    <div style="align-self:flex-end; padding-bottom:8px">
+      <button onclick="generateWords()">Generate Words</button>
+    </div>
+  </div>
+  <pre id="generate-response" class="response" style="display:none"></pre>
+</section>
+
+<!-- ─── SESSION END ───────────────────────────────────────────────────────── -->
+<section id="session-section">
+  <h2>7. End Session (Gamification)</h2>
+  <div class="row">
+    <div style="flex:1">
+      <label>Final Score (0–1)</label>
+      <input id="session-score" type="number" min="0" max="1" step="0.01" value="0.75" />
+    </div>
+    <div style="align-self:flex-end; padding-bottom:8px">
+      <button onclick="endSession()">End Session</button>
+    </div>
+  </div>
+  <pre id="session-response" class="response" style="display:none"></pre>
+</section>
+
+<script>
+  // ─── Global state ──────────────────────────────────────────────────────────
+  let JWT_TOKEN   = null;
+  let CURRENT_USER_ID = null;
+  let CURRENT_WORD = null;   // { id, word, ipa, ... }
+  let ATTEMPT_NUM  = 1;
+  let TRANSCRIPTS  = [];
+
+  // Recording state
+  let mediaRecorder    = null;
+  let recordedChunks   = [];
+  let recordedBlob     = null;
+  let browserTranscript = null;   // set by SpeechRecognition when available
+  let recognition       = null;
+
+  // ─── Helpers ───────────────────────────────────────────────────────────────
+  function showJSON(preId, data) {
+    const el = document.getElementById(preId);
+    el.style.display = 'block';
+    el.textContent = JSON.stringify(data, null, 2);
+  }
+
+  function setStatus(elId, msg, isError = false) {
+    const el = document.getElementById(elId);
+    el.className = 'status ' + (isError ? 'error' : 'ok');
+    el.textContent = msg;
+  }
+
+  function authHeaders(extra = {}) {
+    return {
+      'Content-Type': 'application/json',
+      ...(JWT_TOKEN ? { Authorization: `Bearer ${JWT_TOKEN}` } : {}),
+      ...extra,
+    };
+  }
+
+  function authedFormHeaders() {
+    return JWT_TOKEN ? { Authorization: `Bearer ${JWT_TOKEN}` } : {};
+  }
+
+  function getUserId() {
+    return (
+      CURRENT_USER_ID ||
+      document.getElementById('user-id-input').value.trim() ||
+      document.getElementById('stats-user-id').value.trim()
+    );
+  }
+
+  function setUserIdFields(userId) {
+    CURRENT_USER_ID = userId;
+    document.getElementById('user-id-input').value = userId;
+    document.getElementById('stats-user-id').value = userId;
+  }
+
+  // ─── Auth ──────────────────────────────────────────────────────────────────
+  async function register() {
+    const email    = document.getElementById('auth-email').value.trim();
+    const password = document.getElementById('auth-password').value;
+    try {
+      const res  = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      showJSON('auth-response', data);
+      if (res.ok) {
+        JWT_TOKEN = data.token;
+        setUserIdFields(data.userId);
+        setStatus('auth-status', `Registered & logged in as ${data.email}`);
+        document.getElementById('token-display').textContent = `JWT: ${JWT_TOKEN}`;
+      } else {
+        setStatus('auth-status', data.error, true);
+      }
+    } catch (err) {
+      setStatus('auth-status', err.message, true);
+    }
+  }
+
+  async function login() {
+    const email    = document.getElementById('auth-email').value.trim();
+    const password = document.getElementById('auth-password').value;
+    try {
+      const res  = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      showJSON('auth-response', data);
+      if (res.ok) {
+        JWT_TOKEN = data.token;
+        setUserIdFields(data.userId);
+        setStatus('auth-status', `Logged in as ${data.email}`);
+        document.getElementById('token-display').textContent = `JWT: ${JWT_TOKEN}`;
+      } else {
+        setStatus('auth-status', data.error, true);
+      }
+    } catch (err) {
+      setStatus('auth-status', err.message, true);
+    }
+  }
+
+  // ─── Word bank ─────────────────────────────────────────────────────────────
+  async function loadWords() {
+    const level  = document.getElementById('level-select').value;
+    const userId = getUserId();
+    if (!userId) { alert('Login first to get a userId.'); return; }
+
+    try {
+      const res  = await fetch(`/api/phrases?level=${level}&userId=${userId}`, {
+        headers: authHeaders({ 'Content-Type': undefined }),
+      });
+      const data = await res.json();
+      showJSON('words-response', data);
+
+      // Show progression status
+      const prog = data.progression;
+      if (prog) {
+        const label = prog.phraseCount === 0
+          ? 'Words only — keep practising to unlock phrases'
+          : prog.phraseCount === 1
+            ? 'Great progress! Phrases unlocked — 1 phrase mixed in ✦'
+            : 'Excellent! Advanced mix — 2 phrases included ✦✦';
+        document.getElementById('progression-status').textContent = label;
+      }
+
+      const list = document.getElementById('word-list');
+      list.innerHTML = '';
+      (data.words || []).forEach((w) => {
+        const li = document.createElement('li');
+        li.textContent = w.word;
+        li.title = w.ipa || '';
+        if (w.type === 'phrase') li.classList.add('phrase');
+        li.addEventListener('click', () => selectWord(w, li));
+        list.appendChild(li);
+      });
+    } catch (err) {
+      showJSON('words-response', { error: err.message });
+    }
+  }
+
+  function selectWord(word, liEl) {
+    CURRENT_WORD = word;
+    ATTEMPT_NUM  = 1;
+    TRANSCRIPTS  = [];
+    recordedBlob = null;
+
+    document.getElementById('current-word-display').textContent = word.word;
+    document.getElementById('ipa-display').textContent = word.ipa || '';
+    document.getElementById('attempt-num').textContent = '1';
+    document.getElementById('attempt-response').style.display = 'none';
+    document.getElementById('recorded-audio').style.display = 'none';
+    document.getElementById('tts-input').value = word.word;
+
+    // Highlight selected word
+    document.querySelectorAll('#word-list li').forEach((el) => el.classList.remove('active'));
+    liEl.classList.add('active');
+  }
+
+  // ─── TTS ───────────────────────────────────────────────────────────────────
+  function browserSpeak(text, speed = 0.85) {
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.rate = speed;
+    utt.lang = 'en-US';
+    window.speechSynthesis.speak(utt);
+  }
+
+  async function playTTS() {
+    const text  = document.getElementById('tts-input').value.trim();
+    const speed = parseFloat(document.getElementById('tts-speed').value) || 0.85;
+    if (!text) { alert('Enter text to speak.'); return; }
+
+    try {
+      const res  = await fetch('/api/tts', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ text, speed }),
+      });
+      const data = await res.json();
+
+      if (res.ok && data.audio) {
+        const audioEl = document.getElementById('tts-audio');
+        audioEl.src = `data:${data.mimeType};base64,${data.audio}`;
+        audioEl.style.display = 'block';
+        audioEl.play();
+        showJSON('tts-response', { mimeType: data.mimeType, bytes: data.audio.length });
+      } else {
+        // ElevenLabs failed (quota, etc.) — fall back to browser TTS
+        browserSpeak(text, speed);
+        showJSON('tts-response', { warning: 'ElevenLabs unavailable, using browser TTS', detail: data.error });
+      }
+    } catch (err) {
+      browserSpeak(text, speed);
+      showJSON('tts-response', { warning: 'ElevenLabs unavailable, using browser TTS', detail: err.message });
+    }
+  }
+
+  // ─── Recording ─────────────────────────────────────────────────────────────
+  // Uses SpeechRecognition (free, Chrome built-in) as primary STT.
+  // Falls back to MediaRecorder + Gemini if SpeechRecognition unavailable.
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const useBrowserSTT = !!SpeechRecognition;
+
+  async function startRecording() {
+    recordedChunks    = [];
+    recordedBlob      = null;
+    browserTranscript = null;
+    document.getElementById('recording-status').textContent = '● Recording…';
+    document.getElementById('record-btn').classList.add('recording');
+
+    if (useBrowserSTT) {
+      // Abort any lingering session before starting a fresh one
+      if (recognition) {
+        try { recognition.abort(); } catch (_) {}
+        recognition = null;
+      }
+
+      recognition = new SpeechRecognition();
+      recognition.lang = 'en-US';
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+      recognition.continuous = false;
+
+      recognition.onresult = (e) => {
+        browserTranscript = e.results[0][0].transcript;
+        document.getElementById('recording-status').textContent =
+          `Heard: "${browserTranscript}" — ready to submit.`;
+        document.getElementById('record-btn').classList.remove('recording');
+      };
+
+      recognition.onerror = (e) => {
+        // 'no-speech' is benign — just prompt the user to try again
+        const msg = e.error === 'no-speech'
+          ? 'No speech detected — hold the button and speak clearly.'
+          : `STT error: ${e.error}`;
+        document.getElementById('recording-status').textContent = msg;
+        document.getElementById('record-btn').classList.remove('recording');
+      };
+
+      recognition.onend = () => {
+        document.getElementById('record-btn').classList.remove('recording');
+        if (!browserTranscript) {
+          document.getElementById('recording-status').textContent =
+            'No speech detected — hold the button and speak clearly.';
+        }
+      };
+
+      try {
+        recognition.start();
+      } catch (err) {
+        document.getElementById('recording-status').textContent = `Could not start recording: ${err.message}`;
+        document.getElementById('record-btn').classList.remove('recording');
+      }
+    } else {
+      // Fallback: MediaRecorder (sends audio to Gemini)
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const options = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+          ? { mimeType: 'audio/webm;codecs=opus' } : {};
+        mediaRecorder = new MediaRecorder(stream, options);
+
+        mediaRecorder.ondataavailable = (e) => {
+          if (e.data.size > 0) recordedChunks.push(e.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          const mimeType = mediaRecorder.mimeType || 'audio/webm';
+          recordedBlob = new Blob(recordedChunks, { type: mimeType });
+          const url = URL.createObjectURL(recordedBlob);
+          const audioEl = document.getElementById('recorded-audio');
+          audioEl.src = url;
+          audioEl.style.display = 'block';
+          stream.getTracks().forEach((t) => t.stop());
+          document.getElementById('record-btn').classList.remove('recording');
+          document.getElementById('recording-status').textContent =
+            `Recorded ${(recordedBlob.size / 1024).toFixed(1)} KB — ready to submit.`;
+        };
+
+        mediaRecorder.start();
+      } catch (err) {
+        alert('Microphone access denied or unavailable: ' + err.message);
+        document.getElementById('record-btn').classList.remove('recording');
+      }
+    }
+  }
+
+  function stopRecording() {
+    if (useBrowserSTT) {
+      if (recognition) recognition.stop();
+    } else {
+      if (mediaRecorder && mediaRecorder.state === 'recording') mediaRecorder.stop();
+    }
+  }
+
+  // ─── Submit attempt ────────────────────────────────────────────────────────
+  async function submitAttempt() {
+    if (!CURRENT_WORD) { alert('Select a word first.'); return; }
+    if (!browserTranscript && !recordedBlob) { alert('Record audio first.'); return; }
+    if (!JWT_TOKEN) { alert('Login first.'); return; }
+
+    const submitBtn = document.querySelector('#attempt-section button[onclick="submitAttempt()"]');
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Analysing…';
+
+    const userId = getUserId();
+    const form = new FormData();
+    form.append('phraseId', CURRENT_WORD.id);
+    form.append('userId', userId);
+    form.append('attemptNumber', String(ATTEMPT_NUM));
+
+    if (browserTranscript) {
+      form.append('transcript', browserTranscript);
+    } else {
+      form.append('audio', recordedBlob, 'recording.webm');
+    }
+
+    try {
+      const res  = await fetch('/api/attempt', {
+        method: 'POST',
+        headers: authedFormHeaders(),
+        body: form,
+      });
+      const data = await res.json();
+      showJSON('attempt-response', data);
+
+      if (res.ok) {
+        TRANSCRIPTS.push(data.transcript || '');
+
+        // Show hint / tongue / lips coaching box for attempts 1 & 2
+        const hintBox = document.getElementById('hint-box');
+        if (data.hint) {
+          document.getElementById('hint-text').textContent   = `💬 ${data.hint}`;
+          document.getElementById('tongue-text').textContent = `👅 Tongue: ${data.tongue || '—'}`;
+          document.getElementById('lips-text').textContent   = `👄 Lips: ${data.lips || '—'}`;
+          hintBox.style.display = 'block';
+        } else {
+          hintBox.style.display = 'none';
+        }
+
+        if (ATTEMPT_NUM < 3) {
+          ATTEMPT_NUM++;
+          document.getElementById('attempt-num').textContent = String(ATTEMPT_NUM);
+          recordedBlob = null;
+          browserTranscript = null;
+          document.getElementById('recording-status').textContent =
+            `Attempt ${ATTEMPT_NUM - 1} submitted. Record attempt ${ATTEMPT_NUM}.`;
+        } else {
+          hintBox.style.display = 'none';
+          document.getElementById('recording-status').textContent =
+            'All 3 attempts complete. See full feedback above.';
+        }
+      }
+    } catch (err) {
+      showJSON('attempt-response', { error: err.message });
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit Attempt';
+    }
+  }
+
+  function resetAttempts() {
+    ATTEMPT_NUM       = 1;
+    TRANSCRIPTS       = [];
+    recordedBlob      = null;
+    browserTranscript = null;
+    document.getElementById('hint-box').style.display = 'none';
+    document.getElementById('attempt-num').textContent = '1';
+    document.getElementById('attempt-response').style.display = 'none';
+    document.getElementById('recorded-audio').style.display = 'none';
+    document.getElementById('recording-status').textContent = '';
+  }
+
+  // ─── Stats ─────────────────────────────────────────────────────────────────
+  async function loadStats() {
+    const userId = document.getElementById('stats-user-id').value.trim() || getUserId();
+    if (!userId) { alert('Enter a userId or login first.'); return; }
+
+    try {
+      const res  = await fetch(`/api/stats/${userId}`, {
+        headers: authHeaders({ 'Content-Type': undefined }),
+      });
+      const data = await res.json();
+      showJSON('stats-response', data);
+    } catch (err) {
+      showJSON('stats-response', { error: err.message });
+    }
+  }
+
+  // ─── Generate words ────────────────────────────────────────────────────────
+  async function generateWords() {
+    const userId = getUserId();
+    const level  = document.getElementById('gen-level-select').value;
+    if (!userId) { alert('Login first.'); return; }
+
+    try {
+      const res  = await fetch('/api/generate-words', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({ userId, level }),
+      });
+      const data = await res.json();
+      showJSON('generate-response', data);
+    } catch (err) {
+      showJSON('generate-response', { error: err.message });
+    }
+  }
+
+  // ─── End session ───────────────────────────────────────────────────────────
+  async function endSession() {
+    const userId     = getUserId();
+    const finalScore = parseFloat(document.getElementById('session-score').value);
+    if (!userId)          { alert('Login first.'); return; }
+    if (isNaN(finalScore)) { alert('Enter a valid score.'); return; }
+
+    try {
+      const res  = await fetch('/api/session', {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify({
+          userId,
+          wordId:     CURRENT_WORD?.id || null,
+          finalScore,
+          attempts:   ATTEMPT_NUM,
+        }),
+      });
+      const data = await res.json();
+      showJSON('session-response', data);
+    } catch (err) {
+      showJSON('session-response', { error: err.message });
+    }
+  }
+</script>
+</body>
+</html>
