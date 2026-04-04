@@ -13,12 +13,21 @@ function stripFences(raw) {
     .replace(/\s*```$/, '')
     .trim();
 
-  // Extract first JSON array or object if there's surrounding text
-  const arrayMatch = cleaned.match(/(\[[\s\S]*\])/);
-  const objectMatch = cleaned.match(/(\{[\s\S]*\})/);
+  // Use the leading character to decide what to extract:
+  //   starts with [ → extract the full array (for generateWords)
+  //   starts with { → extract the full object (for analyseAttempt / getFullFeedback)
+  //   otherwise → try object first (handles preamble text before JSON)
+  if (cleaned.startsWith('[')) {
+    const arrayMatch = cleaned.match(/(\[[\s\S]*\])/);
+    if (arrayMatch) return arrayMatch[1];
+  }
 
-  if (arrayMatch) return arrayMatch[1];
+  const objectMatch = cleaned.match(/(\{[\s\S]*\})/);
   if (objectMatch) return objectMatch[1];
+
+  const arrayMatch = cleaned.match(/(\[[\s\S]*\])/);
+  if (arrayMatch) return arrayMatch[1];
+
   return cleaned;
 }
 
@@ -89,11 +98,14 @@ async function analyseAttempt(word, transcript, attemptNumber) {
     const raw = await callClaude(system, user, 512, MODEL_FAST);
     const parsed = JSON.parse(stripFences(raw));
 
-    if (
-      typeof parsed.score !== 'number' ||
-      typeof parsed.phonemes_hit !== 'object'
-    ) {
-      throw new Error('Claude returned malformed analyseAttempt JSON.');
+    const score = parseFloat(parsed.score);
+    if (isNaN(score)) {
+      throw new Error('Claude returned malformed analyseAttempt JSON: missing score.');
+    }
+    parsed.score = score;
+
+    if (!parsed.phonemes_hit || typeof parsed.phonemes_hit !== 'object') {
+      parsed.phonemes_hit = {};
     }
 
     return parsed;
@@ -140,13 +152,21 @@ async function getFullFeedback(word, transcripts) {
       `- Do NOT wrap the response in markdown code fences`;
 
     const raw = await callClaude(system, user, 1024, MODEL_FULL);
-    console.log('[getFullFeedback] raw Claude response:', raw.slice(0, 300));
 
-    const parsed = JSON.parse(stripFences(raw));
+    console.log('[getFullFeedback] raw response:', raw);
 
-    if (typeof parsed.score !== 'number') {
+    const cleaned = stripFences(raw);
+    console.log('[getFullFeedback] cleaned:', cleaned);
+
+    const parsed = JSON.parse(cleaned);
+
+    // Coerce score to number whether Claude returned 0.65 or "0.65"
+    const score = parseFloat(parsed.score);
+    if (isNaN(score)) {
       throw new Error(`missing or non-numeric score field`);
     }
+    parsed.score = score;
+
     if (!Array.isArray(parsed.phonemeBreakdown)) {
       parsed.phonemeBreakdown = [];
     }

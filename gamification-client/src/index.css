@@ -1,0 +1,122 @@
+/* ── Reset ──────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, #root { height: 100%; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #87CEEB;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Theme variables ─────────────────────────────────────────────────────────── */
+:root {
+  --sky-top:      #87CEEB;
+  --sky-bottom:   #c8e6c9;
+  --grass:        #4CAF50;
+  --card-bg:      #FFFDF5;
+  --card-shadow:  0 8px 32px rgba(0,0,0,0.12);
+  --gold:         #FFD700;
+  --orange:       #FF8C42;
+  --purple:       #9B7ADE;
+  --green:        #4CAF50;
+  --red:          #E85D5D;
+  --brown:        #3D2E1A;
+  --tan:          #8B7355;
+  --text:         #3D2E1A;
+  --text-soft:    #6B5240;
+  --border:       rgba(139,115,85,0.2);
+}
+
+/* ── Keyframe animations ─────────────────────────────────────────────────────── */
+
+@keyframes wobble {
+  0%, 100% { transform: rotate(0deg); }
+  20%       { transform: rotate(-8deg); }
+  40%       { transform: rotate(8deg); }
+  60%       { transform: rotate(-5deg); }
+  80%       { transform: rotate(5deg); }
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-10px); }
+}
+
+@keyframes waddle {
+  0%, 100% { transform: rotate(0deg) translateX(0); }
+  25%       { transform: rotate(-6deg) translateX(-3px); }
+  75%       { transform: rotate(6deg) translateX(3px); }
+}
+
+@keyframes floatUp {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-60px) scale(1.4); }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15%       { transform: translateX(-12px) rotate(-2deg); }
+  30%       { transform: translateX(12px) rotate(2deg); }
+  45%       { transform: translateX(-8px); }
+  60%       { transform: translateX(8px); }
+  75%       { transform: translateX(-4px); }
+}
+
+@keyframes eggGlow {
+  0%, 100% { filter: drop-shadow(0 0 4px rgba(255,215,0,0.4)); }
+  50%       { filter: drop-shadow(0 0 16px rgba(255,215,0,0.9)); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes popIn {
+  0%   { transform: scale(0.5); opacity: 0; }
+  70%  { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+@keyframes flyAway {
+  0%   { transform: translateX(0) translateY(0) rotate(0); opacity: 1; }
+  100% { transform: translateX(120px) translateY(-80px) rotate(20deg); opacity: 0; }
+}
+
+@keyframes wolfSlide {
+  0%   { transform: translateX(100%) scale(1.2); opacity: 0; }
+  30%  { transform: translateX(0) scale(1.2); opacity: 1; }
+  70%  { transform: translateX(0) scale(1.2); opacity: 1; }
+  100% { transform: translateX(-100%) scale(1); opacity: 0; }
+}
+
+@keyframes pulseStreak {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.2); }
+}
+
+@keyframes scoreReveal {
+  0%   { transform: scale(0.3) rotate(-10deg); opacity: 0; }
+  60%  { transform: scale(1.1) rotate(2deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes cloudDrift {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(40px); }
+}
+
+@keyframes grassSway {
+  0%, 100% { transform: rotate(0deg); transform-origin: bottom; }
+  50%       { transform: rotate(3deg); transform-origin: bottom; }
+}
+
+/* ── Utility ──────────────────────────────────────────────────────────────────── */
+.animate-fadein   { animation: fadeIn 0.35s ease forwards; }
+.animate-popin    { animation: popIn 0.4s cubic-bezier(.22,.61,.36,1) forwards; }
+.animate-shake    { animation: shake 0.5s ease; }
+.animate-egg-glow { animation: eggGlow 1.5s ease infinite; }
+.animate-bounce   { animation: bounce 0.8s ease infinite; }
+.animate-waddle   { animation: waddle 0.6s ease infinite; }
+.animate-wobble   { animation: wobble 0.5s ease; }
+.animate-fly-away { animation: flyAway 1s ease forwards; }
