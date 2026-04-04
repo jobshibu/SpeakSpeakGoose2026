@@ -63,15 +63,15 @@ export default function RecordScreen() {
         setHint(result.hint);
         updateSession({ attempt: attemptNumber, score: result.score, transcript: result.transcript });
       } else {
-        // Attempt 3 is final
+        const fb = result.fullFeedback || {};
         setFinalScore(result.score);
         updateSession({ 
           attempt: 3, 
           score: result.score, 
           transcript: result.transcript,
-          phonemeBreakdown: result.phonemeBreakdown,
-          advice: result.advice,
-          drill: result.drill
+          phonemeBreakdown: fb.phonemeBreakdown,
+          advice: fb.advice,
+          drill: fb.drill
         });
         navigate('/feedback');
       }
@@ -118,7 +118,10 @@ export default function RecordScreen() {
               {currentPhrase?.word}
             </h1>
             <p className="text-2xl font-mono text-gray-400">
-              /{currentPhrase?.ipa}/
+              {(() => {
+                const raw = (currentPhrase?.ipa || '').replace(/^\/*|\/*$/g, '');
+                return raw ? `/${raw}/` : '';
+              })()}
             </p>
           </motion.div>
 

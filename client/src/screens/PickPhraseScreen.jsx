@@ -68,18 +68,10 @@ export default function PickPhraseScreen() {
   };
 
   const handleCustomUse = () => {
-    if (customPhrase.trim()) {
-      const phraseObj = {
-        id: 'custom-' + Date.now(),
-        word: customPhrase.trim(),
-        ipa: '',
-        level: 'custom',
-        targets: [],
-        phonemic: { tag: 'Custom', detail: 'Practice your own phrase' }
-      };
-      setCurrentPhrase(phraseObj);
-      navigate('/hear');
-    }
+    if (!customPhrase.trim()) return;
+    window.alert(
+      'The live API only accepts words from your bank (use "Give me a prompt"). Custom phrases are not wired yet.',
+    );
   };
 
   return (

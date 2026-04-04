@@ -6,6 +6,8 @@
   "scripts": {
     "start": "node server/index.js",
     "dev": "nodemon server/index.js",
+    "dev:client": "npm run dev --prefix client",
+    "dev:all": "concurrently -n api,web -c blue,green \"npm run dev\" \"npm run dev --prefix client\"",
     "seed": "node server/db/seed.js"
   },
   "dependencies": {
@@ -21,6 +23,7 @@
     "pg": "^8.12.0"
   },
   "devDependencies": {
+    "concurrently": "^9.2.1",
     "nodemon": "^3.1.4"
   }
 }

@@ -6,14 +6,18 @@ export default function PhonemePill({ phoneme, status, note }) {
 
   const colors = {
     correct: "bg-green-100 text-green-700 border-green-200",
+    hit: "bg-green-100 text-green-700 border-green-200",
     missed: "bg-red-100 text-red-700 border-red-200",
+    partial: "bg-amber-100 text-amber-800 border-amber-200",
   };
+
+  const tone = colors[status] || colors.correct;
 
   return (
     <div className="relative inline-block">
       <button
         onClick={() => setShowNote(!showNote)}
-        className={`px-4 py-2 rounded-full border font-mono font-bold text-lg transition-transform active:scale-95 ${colors[status]}`}
+        className={`px-4 py-2 rounded-full border font-mono font-bold text-lg transition-transform active:scale-95 ${tone}`}
       >
         {phoneme}
       </button>

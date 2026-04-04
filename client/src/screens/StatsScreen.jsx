@@ -38,7 +38,7 @@ export default function StatsScreen() {
 
   const statCards = [
     { label: 'Phrases Done', value: userStats.totalPhrases, icon: Target, color: 'text-blue-600 bg-blue-50' },
-    { label: 'Avg Score', value: `${Math.round(userStats.avgScore * 100)}%`, icon: Zap, color: 'text-yellow-600 bg-yellow-50' },
+    { label: 'Avg Score', value: userStats.avgScore != null ? `${Math.round(userStats.avgScore * 100)}%` : '—', icon: Zap, color: 'text-yellow-600 bg-yellow-50' },
     { label: 'Day Streak', value: userStats.streak, icon: Calendar, color: 'text-orange-600 bg-orange-50' },
   ];
 

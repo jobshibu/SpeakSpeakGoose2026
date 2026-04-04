@@ -3,8 +3,21 @@ import { useCallback, useRef } from 'react';
 export const useAudio = () => {
   const audioContext = useRef(null);
 
-  const playBase64 = useCallback(async (base64String) => {
+  const playBase64 = useCallback(async (base64String, mimeType = 'audio/mpeg') => {
     try {
+      if (mimeType === 'audio/mpeg' || mimeType === 'audio/mp3') {
+        const blob = await fetch(`data:${mimeType};base64,${base64String}`).then((r) => r.blob());
+        const url = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        await new Promise((resolve, reject) => {
+          audio.onended = resolve;
+          audio.onerror = reject;
+          audio.play().catch(reject);
+        });
+        URL.revokeObjectURL(url);
+        return;
+      }
+
       if (!audioContext.current) {
         audioContext.current = new (window.AudioContext || window.webkitAudioContext)();
       }
@@ -20,13 +33,11 @@ export const useAudio = () => {
         bytes[i] = binaryString.charCodeAt(i);
       }
 
-      // Gemini TTS returns raw PCM 16-bit mono at 24000Hz
       const pcmData = new Int16Array(bytes.buffer);
       const audioBuffer = audioContext.current.createBuffer(1, pcmData.length, 24000);
       const channelData = audioBuffer.getChannelData(0);
 
       for (let i = 0; i < pcmData.length; i++) {
-        // Convert Int16 to Float32 [-1, 1]
         channelData[i] = pcmData[i] / 32768.0;
       }
 

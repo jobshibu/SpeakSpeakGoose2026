@@ -21,8 +21,8 @@ export default function HearItScreen() {
   const handleHear = async (speed = 1.0) => {
     setLoading(true);
     try {
-      const { audio } = await practiceApi.getTTS(currentPhrase.word, speed);
-      await playBase64(audio);
+      const { audio, mimeType } = await practiceApi.getTTS(currentPhrase.word, speed);
+      await playBase64(audio, mimeType || 'audio/mpeg');
     } catch (err) {
       console.error(err);
     } finally {
@@ -46,7 +46,10 @@ export default function HearItScreen() {
           {currentPhrase.word}
         </h1>
         <p className="text-2xl font-mono text-gray-400 mb-12">
-          /{currentPhrase.ipa}/
+          {(() => {
+            const raw = (currentPhrase.ipa || '').replace(/^\/*|\/*$/g, '');
+            return raw ? `/${raw}/` : '';
+          })()}
         </p>
 
         {currentPhrase.phonemic && (

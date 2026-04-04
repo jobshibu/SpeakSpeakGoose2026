@@ -1,7 +1,4 @@
-import { GoogleGenAI, Modality } from "@google/genai";
 import useAppStore from './store';
-
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 const apiRequest = async (endpoint, options = {}) => {
   const { token } = useAppStore.getState();
@@ -25,7 +22,7 @@ const apiRequest = async (endpoint, options = {}) => {
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.message || 'API request failed');
+    throw new Error(errorData.error || errorData.message || 'API request failed');
   }
 
   return response.json();
@@ -43,60 +40,46 @@ export const authApi = {
 };
 
 export const phraseApi = {
-  getPhrases: (level, userId) => apiRequest(`/api/phrases?level=${level}&userId=${userId}`),
+  getPhrases: async (level, userId) => {
+    const data = await apiRequest(
+      `/api/phrases?level=${encodeURIComponent(level)}&userId=${encodeURIComponent(userId)}`,
+    );
+    return data.words ?? [];
+  },
   getStats: (userId) => apiRequest(`/api/stats/${userId}`),
 };
 
 export const practiceApi = {
-  getTTS: async (text, speed = 1.0) => {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-preview-tts",
-      contents: [{ parts: [{ text: `Say clearly at ${speed}x speed: ${text}` }] }],
-      config: {
-        responseModalities: [Modality.AUDIO],
-        speechConfig: {
-          voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: 'Kore' },
-          },
-        },
-      },
-    });
-    return { audio: response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data };
-  },
-  
+  getTTS: (text, speed = 1.0) =>
+    apiRequest('/api/tts', {
+      method: 'POST',
+      body: JSON.stringify({ text, speed }),
+    }),
+
   submitAttempt: async (audioBlob, phrase, attemptNumber) => {
-    const reader = new FileReader();
-    const base64Promise = new Promise((resolve) => {
-      reader.onloadend = () => resolve(reader.result.split(',')[1]);
-      reader.readAsDataURL(audioBlob);
-    });
-    const audioBase64 = await base64Promise;
+    const { token, userId } = useAppStore.getState();
+    const form = new FormData();
+    form.append('audio', audioBlob, 'recording.webm');
+    form.append('phraseId', phrase.id);
+    form.append('userId', userId);
+    form.append('attemptNumber', String(attemptNumber));
 
-    const prompt = `
-      Analyze this audio of a user saying "${phrase.word}".
-      This is attempt #${attemptNumber}.
-      Return JSON with:
-      - transcript: what you heard
-      - score: 0.0 to 1.0
-      ${attemptNumber < 3 ? '- hint: a short tip for the next attempt' : `
-      - phonemeBreakdown: array of { phoneme, status: "correct"|"missed", note }
-      - advice: a paragraph of feedback
-      - drill: a short practice phrase
-      `}
-    `;
+    const headers = {};
+    if (token) headers.Authorization = `Bearer ${token}`;
 
-    const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
-      contents: [
-        { parts: [{ text: prompt }] },
-        { parts: [{ inlineData: { data: audioBase64, mimeType: 'audio/webm' } }] }
-      ],
-      config: { responseMimeType: "application/json" }
+    const response = await fetch('/api/attempt', {
+      method: 'POST',
+      body: form,
+      headers,
     });
 
-    return JSON.parse(response.text);
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data.error || data.message || `HTTP ${response.status}`);
+    }
+    return data;
   },
-  
+
   saveSession: (sessionData) => apiRequest('/api/session', {
     method: 'POST',
     body: JSON.stringify(sessionData),

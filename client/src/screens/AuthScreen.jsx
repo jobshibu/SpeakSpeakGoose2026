@@ -109,14 +109,6 @@ export default function AuthScreen() {
             >
               {isLogin ? "Don't have an account? Register" : "Already have an account? Sign In"}
             </button>
-            <div className="pt-4 border-t border-gray-100">
-              <button
-                onClick={() => setAuth('preview-token', 'preview-user')}
-                className="text-xs font-black uppercase tracking-widest text-gray-400 hover:text-green-600 transition-colors"
-              >
-                Bypass for Preview
-              </button>
-            </div>
           </div>
         </div>
       </motion.div>

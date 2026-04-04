@@ -120,7 +120,7 @@ export default function FeedbackScreen() {
                 <div className="w-12 h-12 bg-yellow-50 text-yellow-600 rounded-2xl flex items-center justify-center mb-3">
                   <Star fill="currentColor" />
                 </div>
-                <p className="text-2xl font-black text-gray-900">+{sessionResult.xp} XP</p>
+                <p className="text-2xl font-black text-gray-900">+{sessionResult.earnedXP ?? sessionResult.xp} XP</p>
                 <p className="text-xs font-bold text-gray-400 uppercase">Earned</p>
               </div>
               <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col items-center text-center">

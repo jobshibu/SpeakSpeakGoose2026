@@ -1,8 +1,8 @@
 import { create } from 'zustand';
 
 const useAppStore = create((set) => ({
-  token: 'preview-token',
-  userId: 'preview-user',
+  token: null,
+  userId: null,
   userStats: null,
   currentPhrase: null,
   currentSession: {
