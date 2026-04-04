@@ -106,6 +106,22 @@
     }
     .word-list li:hover  { background: #2a3a5a; }
     .word-list li.active { background: #2a5298; border-color: #4a72c8; color: #fff; }
+    .word-list li.phrase {
+      background: #2a1e3a;
+      border-color: #6a4a9a;
+      font-style: italic;
+    }
+    .word-list li.phrase::after {
+      content: ' ✦';
+      font-size: 0.7rem;
+      color: #a78bda;
+      font-style: normal;
+    }
+    #progression-status {
+      font-size: 0.82rem;
+      color: #888;
+      margin-bottom: 6px;
+    }
 
     #current-word-display {
       font-size: 1.5rem;
@@ -196,6 +212,7 @@
     </div>
   </div>
   <button onclick="loadWords()">Load Words</button>
+  <div id="progression-status"></div>
   <ul id="word-list" class="word-list"></ul>
   <pre id="words-response" class="response" style="display:none"></pre>
 </section>
@@ -405,12 +422,24 @@
       const data = await res.json();
       showJSON('words-response', data);
 
+      // Show progression status
+      const prog = data.progression;
+      if (prog) {
+        const label = prog.phraseCount === 0
+          ? 'Words only — keep practising to unlock phrases'
+          : prog.phraseCount === 1
+            ? 'Great progress! Phrases unlocked — 1 phrase mixed in ✦'
+            : 'Excellent! Advanced mix — 2 phrases included ✦✦';
+        document.getElementById('progression-status').textContent = label;
+      }
+
       const list = document.getElementById('word-list');
       list.innerHTML = '';
       (data.words || []).forEach((w) => {
         const li = document.createElement('li');
         li.textContent = w.word;
         li.title = w.ipa || '';
+        if (w.type === 'phrase') li.classList.add('phrase');
         li.addEventListener('click', () => selectWord(w, li));
         list.appendChild(li);
       });

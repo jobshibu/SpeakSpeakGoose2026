@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS words (
   word          TEXT        UNIQUE NOT NULL,
   ipa           TEXT,
   level         TEXT        NOT NULL,
+  type          TEXT        NOT NULL DEFAULT 'word',
   source        TEXT        NOT NULL DEFAULT 'seed',
   reviewed      BOOLEAN     DEFAULT false,
   targets       TEXT[],

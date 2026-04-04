@@ -10,24 +10,28 @@ const attemptRoutes  = require('./routes/attempt');
 const generateRoutes = require('./routes/generate');
 const sessionRoutes  = require('./routes/session');
 const statsRoutes    = require('./routes/stats');
+const { general, auth: authLimiter, ai, tts: ttsLimiter } = require('./middleware/rateLimiter');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+
+// Global rate limiter — all /api routes
+app.use('/api', general);
 
 // ── Static frontend ───────────────────────────────────────────────────────────
 app.use(express.static(path.join(__dirname, '../client')));
 
 // ── API routes ────────────────────────────────────────────────────────────────
-app.use('/api/auth',           authRoutes);
+app.use('/api/auth',           authLimiter, authRoutes);
 app.use('/api/phrases',        phrasesRoutes);
-app.use('/api/tts',            ttsRoutes);
-app.use('/api/attempt',        attemptRoutes);
-app.use('/api/generate-words', generateRoutes);
+app.use('/api/tts',            ttsLimiter,  ttsRoutes);
+app.use('/api/attempt',        ai,          attemptRoutes);
+app.use('/api/generate-words', ai,          generateRoutes);
 app.use('/api/session',        sessionRoutes);
 app.use('/api/stats',          statsRoutes);
 

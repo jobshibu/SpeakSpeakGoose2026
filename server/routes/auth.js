@@ -3,11 +3,12 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../db');
+const { validateAuthInput } = require('../middleware/validate');
 
 const SALT_ROUNDS = 12;
 
 // POST /api/auth/register
-router.post('/register', async (req, res) => {
+router.post('/register', validateAuthInput, async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -55,7 +56,7 @@ router.post('/register', async (req, res) => {
 });
 
 // POST /api/auth/login
-router.post('/login', async (req, res) => {
+router.post('/login', validateAuthInput, async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {

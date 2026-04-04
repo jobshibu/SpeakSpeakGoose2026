@@ -109,35 +109,49 @@ async function analyseAttempt(word, transcript, attemptNumber) {
 async function getFullFeedback(word, transcripts) {
   try {
     const system =
-      'You are an ESL pronunciation coach. ' +
-      'Respond with ONLY valid JSON — no markdown, no explanation.';
+      'You are a warm, encouraging ESL pronunciation coach. ' +
+      'You will receive a target word and up to three transcripts of a learner attempting it. ' +
+      'Analyse their progress across attempts and return ONLY a valid JSON object — ' +
+      'no markdown fences, no preamble, no trailing text.';
 
     const attemptList = transcripts
       .map((t, i) => `Attempt ${i + 1}: "${t}"`)
       .join('\n');
 
     const user =
-      `Target word: "${word}"\n` +
-      `Three learner transcripts:\n${attemptList}\n\n` +
-      'Return JSON in exactly this shape:\n' +
-      '{\n' +
-      '  "phonemes_hit": { "<phoneme>": <boolean>, ... },\n' +
-      '  "score": <0.0–1.0>,\n' +
-      '  "phonemeBreakdown": [\n' +
-      '    { "phoneme": "<p>", "status": "hit|missed|partial", "note": "<brief note>" }\n' +
-      '  ],\n' +
-      '  "advice": "<2–3 sentences>",\n' +
-      '  "drill": "<one specific exercise>"\n' +
-      '}';
+      `Target word: "${typeof word === 'object' ? word.word : word}"\n` +
+      (typeof word === 'object' && word.ipa ? `IPA: "${word.ipa}"\n` : '') +
+      `\nLearner transcripts:\n${attemptList}\n\n` +
+      `Return ONLY this JSON object (no extra text before or after):\n` +
+      `{\n` +
+      `  "phonemes_hit": { "/ð/": false, "/ɛ/": true },\n` +
+      `  "score": 0.65,\n` +
+      `  "phonemeBreakdown": [\n` +
+      `    { "phoneme": "/ð/", "status": "missed", "note": "brief note" }\n` +
+      `  ],\n` +
+      `  "advice": "2 to 3 encouraging sentences about overall performance.",\n` +
+      `  "drill": "One specific physical exercise to practise the main error."\n` +
+      `}\n\n` +
+      `Rules:\n` +
+      `- phonemes_hit keys must use IPA wrapped in forward slashes\n` +
+      `- status must be exactly "hit", "missed", or "partial"\n` +
+      `- score: 0.0–0.3 very different, 0.4–0.6 partial, 0.7–0.85 mostly correct, 0.86–1.0 excellent\n` +
+      `- Only include phonemes that actually appear in the target word's IPA\n` +
+      `- Do NOT wrap the response in markdown code fences`;
 
-    const raw = await callClaude(system, user);
+    const raw = await callClaude(system, user, 1024, MODEL_FULL);
+    console.log('[getFullFeedback] raw Claude response:', raw.slice(0, 300));
+
     const parsed = JSON.parse(stripFences(raw));
 
-    if (
-      typeof parsed.score !== 'number' ||
-      !Array.isArray(parsed.phonemeBreakdown)
-    ) {
-      throw new Error('Claude returned malformed getFullFeedback JSON.');
+    if (typeof parsed.score !== 'number') {
+      throw new Error(`missing or non-numeric score field`);
+    }
+    if (!Array.isArray(parsed.phonemeBreakdown)) {
+      parsed.phonemeBreakdown = [];
+    }
+    if (!parsed.phonemes_hit || typeof parsed.phonemes_hit !== 'object') {
+      parsed.phonemes_hit = {};
     }
 
     return parsed;

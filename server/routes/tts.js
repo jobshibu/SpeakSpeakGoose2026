@@ -2,10 +2,11 @@ const express = require('express');
 const router = express.Router();
 const { textToSpeech } = require('../services/elevenlabs');
 const authMiddleware = require('../middleware/auth');
+const { validateTTSInput } = require('../middleware/validate');
 
 // POST /api/tts
 // body: { text: string, speed?: number }
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', authMiddleware, validateTTSInput, async (req, res) => {
   const { text, speed } = req.body;
 
   if (!text || typeof text !== 'string' || text.trim().length === 0) {

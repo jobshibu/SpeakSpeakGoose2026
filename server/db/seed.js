@@ -213,30 +213,147 @@ const seedWords = [
   },
 ];
 
+const seedPhrases = [
+  // ── EASY PHRASES ──────────────────────────────────────────────────────────
+  {
+    word: 'this is the one',
+    ipa: '/ðɪs ɪz ðə wʌn/',
+    level: 'easy',
+    type: 'phrase',
+    source: 'seed',
+    reviewed: true,
+    targets: ['ð', 'ɪ', 'z'],
+    phonemic: { tag: 'dental-chain', detail: 'Two instances of /ð/ (this, the); linking /z/ in "is"; short /ɪ/ in "this".' },
+    syllabic: { tag: 'four-word', detail: 'Four monosyllabic words — function words unstressed, "one" receives nuclear stress.' },
+    accentual: { tag: 'end-focus', detail: 'Primary stress on "one"; "this", "is", "the" all weakly reduced.' },
+    intonational: { tag: 'falling', detail: 'Falling nuclear tone on "one" as a statement.' },
+  },
+  {
+    word: 'run to the ship',
+    ipa: '/rʌn tə ðə ʃɪp/',
+    level: 'easy',
+    type: 'phrase',
+    source: 'seed',
+    reviewed: true,
+    targets: ['r', 'ʌ', 'ð', 'ʃ', 'ɪ'],
+    phonemic: { tag: 'multi-target', detail: 'Combines /r/, /ʌ/, /ð/, /ʃ/, /ɪ/ — four common ESL error phonemes in one phrase.' },
+    syllabic: { tag: 'four-word', detail: '"run" and "ship" are stressed; "to" and "the" reduced to /tə/ and /ðə/.' },
+    accentual: { tag: 'end-focus', detail: 'Primary nucleus on "ship"; "run" receives secondary stress.' },
+    intonational: { tag: 'falling', detail: 'Imperative — sharp falling tone on "ship".' },
+  },
+  {
+    word: 'four beds in this room',
+    ipa: '/fɔːr bɛdz ɪn ðɪs ruːm/',
+    level: 'easy',
+    type: 'phrase',
+    source: 'seed',
+    reviewed: true,
+    targets: ['f', 'ɔː', 'ɛ', 'z', 'ð'],
+    phonemic: { tag: 'consonant-cluster', detail: '/bɛdz/ has final voiced /z/ allomorph of plural -s; /ð/ in "this"; /ɔː/ in "four".' },
+    syllabic: { tag: 'five-word', detail: '"four", "beds", "room" carry stress; "in" and "this" reduce.' },
+    accentual: { tag: 'end-focus', detail: 'Nuclear stress on "room"; "four" and "beds" share secondary stress.' },
+    intonational: { tag: 'falling', detail: 'Declarative — falling nucleus on "room".' },
+  },
+
+  // ── MEDIUM PHRASES ────────────────────────────────────────────────────────
+  {
+    word: 'together we can decide',
+    ipa: '/təˈɡɛð.ər wi kən dɪˈsaɪd/',
+    level: 'medium',
+    type: 'phrase',
+    source: 'seed',
+    reviewed: true,
+    targets: ['ð', 'ɛ', 'ər', 'aɪ'],
+    phonemic: { tag: 'medial-dental-diphthong', detail: '/ð/ in "together"; /aɪ/ diphthong in "decide"; /ər/ schwa-r coda.' },
+    syllabic: { tag: 'five-word', detail: '"together" (3 syllables) and "decide" (2) carry stress; "we" and "can" reduce.' },
+    accentual: { tag: 'end-focus', detail: 'Nuclear stress on "decide"; secondary on /ɡɛð/ in "together".' },
+    intonational: { tag: 'falling', detail: 'Statement with confidence — falling nucleus on "decide".' },
+  },
+  {
+    word: 'it is very important',
+    ipa: '/ɪt ɪz ˈvɛr.i ɪmˈpɔːr.tənt/',
+    level: 'medium',
+    type: 'phrase',
+    source: 'seed',
+    reviewed: true,
+    targets: ['ɪ', 'v', 'ɛ', 'ɔː', 'nt'],
+    phonemic: { tag: 'linking', detail: 'Linking /t/ in "it is" may flap to [ɾ]; /v/ fricative in "very"; /ɔːr/ rhotic vowel.' },
+    syllabic: { tag: 'four-word', detail: '"it" and "is" reduce; "very" and "important" carry full stress.' },
+    accentual: { tag: 'end-focus', detail: 'Nuclear stress on /pɔːr/ in "important".' },
+    intonational: { tag: 'falling', detail: 'Emphatic statement — wide falling tone on "important".' },
+  },
+  {
+    word: 'because of the garden',
+    ipa: '/bɪˈkɒz əv ðə ˈɡɑːr.dən/',
+    level: 'medium',
+    type: 'phrase',
+    source: 'seed',
+    reviewed: true,
+    targets: ['ɪ', 'ɒ', 'z', 'ə', 'ɑː'],
+    phonemic: { tag: 'function-reduction', detail: '"of" reduces to /əv/; "the" to /ðə/; /ɒ/ in "because"; long /ɑː/ in "garden".' },
+    syllabic: { tag: 'four-word', detail: '"because" and "garden" stressed; "of" and "the" fully reduced.' },
+    accentual: { tag: 'end-focus', detail: 'Nuclear stress on "garden" first syllable /ɡɑːr/.' },
+    intonational: { tag: 'rising-falling', detail: 'Prepositional phrase — may carry rise-fall if used contrastively.' },
+  },
+
+  // ── HARD PHRASES ──────────────────────────────────────────────────────────
+  {
+    word: 'particularly important pronunciation',
+    ipa: '/pərˈtɪk.jə.lər.li ɪmˈpɔːr.tənt prəˌnʌn.siˈeɪ.ʃən/',
+    level: 'hard',
+    type: 'phrase',
+    source: 'seed',
+    reviewed: true,
+    targets: ['ə', 'ɪk', 'ɔː', 'ʌ', 'eɪ', 'ʃ'],
+    phonemic: { tag: 'polysyllabic-chain', detail: 'Three polysyllabic words in a row; multiple schwa reductions; /eɪ/ diphthong in "pronunciation".' },
+    syllabic: { tag: 'thirteen-syllable', detail: 'pər.ˈtɪk.jə.lər.li (5) + ɪm.ˈpɔːr.tənt (3) + prə.ˌnʌn.si.ˈeɪ.ʃən (5) = 13 syllables.' },
+    accentual: { tag: 'three-nucleus', detail: 'Three separate primary stresses: /tɪk/, /pɔːr/, /eɪ/.' },
+    intonational: { tag: 'falling', detail: 'Final nucleus on /eɪ/ in "pronunciation" with falling tail.' },
+  },
+  {
+    word: 'the entrepreneur will simultaneously deteriorate',
+    ipa: '/ðə ˌɒn.trə.prəˈnɜːr wɪl ˌsɪm.əlˈteɪ.ni.əs.li dɪˈtɪər.i.ə.reɪt/',
+    level: 'hard',
+    type: 'phrase',
+    source: 'seed',
+    reviewed: true,
+    targets: ['ɒ', 'nɜː', 'teɪ', 'ɪər', 'reɪ'],
+    phonemic: { tag: 'advanced-polysyllabic', detail: 'Four content words with complex stress; /nɜːr/ r-coloured vowel; adjacent vowels in "deteriorate".' },
+    syllabic: { tag: 'sixteen-syllable', detail: 'ðə(1) + ˌɒn.trə.prəˈnɜːr(5) + wɪl(1) + ˌsɪm.əlˈteɪ.ni.əs.li(6) + dɪˈtɪər.i.ə.reɪt(5) = 18 syllables.' },
+    accentual: { tag: 'four-nucleus', detail: 'Primary stresses on /nɜːr/, /teɪ/, /tɪər/ — maintain rhythm across long utterance.' },
+    intonational: { tag: 'falling', detail: 'Long declarative — final falling nucleus on /reɪt/ in "deteriorate".' },
+  },
+];
+
+async function insertEntry(w) {
+  await db.query(
+    `INSERT INTO words
+       (word, ipa, level, type, source, reviewed, targets,
+        phonemic, syllabic, accentual, intonational)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+     ON CONFLICT (word) DO NOTHING`,
+    [
+      w.word,
+      w.ipa,
+      w.level,
+      w.type || 'word',
+      w.source,
+      w.reviewed,
+      w.targets,
+      JSON.stringify(w.phonemic),
+      JSON.stringify(w.syllabic),
+      JSON.stringify(w.accentual),
+      JSON.stringify(w.intonational),
+    ],
+  );
+  console.log(`  ✓ [${w.type || 'word'}] ${w.word}`);
+}
+
 async function seed() {
-  console.log('Seeding words table…');
-  for (const w of seedWords) {
-    await db.query(
-      `INSERT INTO words
-         (word, ipa, level, source, reviewed, targets,
-          phonemic, syllabic, accentual, intonational)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
-       ON CONFLICT (word) DO NOTHING`,
-      [
-        w.word,
-        w.ipa,
-        w.level,
-        w.source,
-        w.reviewed,
-        w.targets,
-        JSON.stringify(w.phonemic),
-        JSON.stringify(w.syllabic),
-        JSON.stringify(w.accentual),
-        JSON.stringify(w.intonational),
-      ],
-    );
-    console.log(`  ✓ ${w.word}`);
-  }
+  console.log('Seeding words…');
+  for (const w of seedWords)   await insertEntry(w);
+  console.log('Seeding phrases…');
+  for (const w of seedPhrases) await insertEntry(w);
   console.log('Done.');
   process.exit(0);
 }

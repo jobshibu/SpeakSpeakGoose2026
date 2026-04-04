@@ -4,10 +4,11 @@ const db = require('../db');
 const { generateWords } = require('../services/claude');
 const { getWeakPhonemes } = require('../services/phonemes');
 const authMiddleware = require('../middleware/auth');
+const { validateGenerateInput } = require('../middleware/validate');
 
 // POST /api/generate-words
 // body: { userId: string, level: string }
-router.post('/', authMiddleware, async (req, res) => {
+router.post('/', authMiddleware, validateGenerateInput, async (req, res) => {
   const { userId, level = 'medium' } = req.body;
 
   if (!userId) {
@@ -41,9 +42,9 @@ router.post('/', authMiddleware, async (req, res) => {
       try {
         const { rows } = await db.query(
           `INSERT INTO words
-             (word, ipa, level, source, reviewed, targets,
+             (word, ipa, level, type, source, reviewed, targets,
               phonemic, syllabic, accentual, intonational)
-           VALUES ($1,$2,$3,'ai',false,$4,$5,$6,$7,$8)
+           VALUES ($1,$2,$3,'word','ai',false,$4,$5,$6,$7,$8)
            ON CONFLICT (word) DO NOTHING
            RETURNING *`,
           [

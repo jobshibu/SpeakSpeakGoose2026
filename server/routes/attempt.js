@@ -6,14 +6,18 @@ const { transcribeAudio } = require('../services/gemini');
 const { analyseAttempt, getFullFeedback } = require('../services/claude');
 const { updatePhonemeScores } = require('../services/phonemes');
 const authMiddleware = require('../middleware/auth');
+const { validateAttemptInput } = require('../middleware/validate');
 
-// Store audio in memory (buffer) — no disk I/O
-const upload = multer({ storage: multer.memoryStorage() });
+// Store audio in memory — max 10 MB per upload
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 },
+});
 
 // POST /api/attempt
 // FormData: audio? (file), transcript? (string), phraseId, userId, attemptNumber
 // Either `audio` (transcribed via Gemini) or `transcript` (pre-computed by client) must be present.
-router.post('/', authMiddleware, upload.single('audio'), async (req, res) => {
+router.post('/', authMiddleware, upload.single('audio'), validateAttemptInput, async (req, res) => {
   const { phraseId, userId, attemptNumber, transcript: clientTranscript } = req.body;
 
   if (!phraseId || !userId || !attemptNumber) {
@@ -71,7 +75,7 @@ router.post('/', authMiddleware, upload.single('audio'), async (req, res) => {
         ...prevRows.map((r) => r.transcript),
         transcript,
       ];
-      feedback = await getFullFeedback(word.word, transcripts);
+      feedback = await getFullFeedback(word, transcripts);
     }
 
     // Persist the attempt
