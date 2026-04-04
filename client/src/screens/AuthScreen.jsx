@@ -3,6 +3,8 @@ import { motion } from 'motion/react';
 import { authApi } from '../api';
 import useAppStore from '../store';
 import { LogIn, UserPlus, Loader2 } from 'lucide-react';
+import coachBg from '../assets/Coachbackground.jpg';
+import Header from '../components/Header';
 
 export default function AuthScreen() {
   const [isLogin, setIsLogin] = useState(true);
@@ -32,12 +34,21 @@ export default function AuthScreen() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100"
-      >
+    <div 
+      className="min-h-screen flex flex-col items-center pt-2 px-6"
+      style={{ 
+        backgroundImage: `url(${coachBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}
+    >
+      <Header transparent={true} />
+      <div className="flex-1 flex items-center justify-center w-full">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100"
+        >
         <div className="p-8">
           <div className="flex flex-col items-center mb-8">
             <div className="w-20 h-20 bg-green-500 rounded-full flex items-center justify-center text-white shadow-lg mb-4 border-4 border-white">
@@ -112,6 +123,7 @@ export default function AuthScreen() {
           </div>
         </div>
       </motion.div>
+      </div>
     </div>
   );
 }

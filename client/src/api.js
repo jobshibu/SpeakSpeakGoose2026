@@ -40,9 +40,9 @@ export const authApi = {
 };
 
 export const phraseApi = {
-  getPhrases: async (level, userId) => {
+  getPhrases: async (userId) => {
     const data = await apiRequest(
-      `/api/phrases?level=${encodeURIComponent(level)}&userId=${encodeURIComponent(userId)}`,
+      `/api/phrases?userId=${encodeURIComponent(userId)}`,
     );
     return data.words ?? [];
   },
@@ -63,6 +63,9 @@ export const practiceApi = {
     form.append('phraseId', phrase.id);
     form.append('userId', userId);
     form.append('attemptNumber', String(attemptNumber));
+    if (String(phrase.id).startsWith('custom-')) {
+      form.append('phraseWord', phrase.word);
+    }
 
     const headers = {};
     if (token) headers.Authorization = `Bearer ${token}`;

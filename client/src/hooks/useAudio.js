@@ -6,15 +6,19 @@ export const useAudio = () => {
   const playBase64 = useCallback(async (base64String, mimeType = 'audio/mpeg') => {
     try {
       if (mimeType === 'audio/mpeg' || mimeType === 'audio/mp3') {
-        const blob = await fetch(`data:${mimeType};base64,${base64String}`).then((r) => r.blob());
-        const url = URL.createObjectURL(blob);
+        const url = `data:${mimeType};base64,${base64String}`;
         const audio = new Audio(url);
         await new Promise((resolve, reject) => {
           audio.onended = resolve;
-          audio.onerror = reject;
-          audio.play().catch(reject);
+          audio.onerror = (e) => {
+            console.error('Audio playback error:', e);
+            reject(new Error('Audio playback failed'));
+          };
+          audio.play().catch((err) => {
+            console.error('Audio play promise rejected:', err);
+            reject(err);
+          });
         });
-        URL.revokeObjectURL(url);
         return;
       }
 

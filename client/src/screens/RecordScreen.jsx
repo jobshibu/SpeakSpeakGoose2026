@@ -9,12 +9,15 @@ import RecordButton from '../components/RecordButton';
 import AttemptDots from '../components/AttemptDots';
 import HintBar from '../components/HintBar';
 import Header from '../components/Header';
+import listeningBg from '../assets/Listeningpage.03.48 PM.jpg';
 
 export default function RecordScreen() {
   const [attemptNumber, setAttemptNumber] = useState(1);
   const [loading, setLoading] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [hint, setHint] = useState('');
+  const [tongue, setTongue] = useState('');
+  const [lips, setLips] = useState('');
   const [error, setError] = useState('');
   
   const { isRecording, start, stop, blob, reset } = useRecorder();
@@ -61,6 +64,8 @@ export default function RecordScreen() {
       
       if (attemptNumber < 3) {
         setHint(result.hint);
+        setTongue(result.tongue || '');
+        setLips(result.lips || '');
         updateSession({ attempt: attemptNumber, score: result.score, transcript: result.transcript });
       } else {
         const fb = result.fullFeedback || {};
@@ -86,6 +91,8 @@ export default function RecordScreen() {
   const handleTryAgain = () => {
     setTranscript('');
     setHint('');
+    setTongue('');
+    setLips('');
     reset();
     if (attemptNumber < 3) {
       setAttemptNumber(prev => prev + 1);
@@ -93,8 +100,15 @@ export default function RecordScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col p-8 items-center">
-      <Header dark />
+    <div 
+      className="min-h-screen flex flex-col pt-2 px-6 items-center"
+      style={{ 
+        backgroundImage: `url("${listeningBg}")`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}
+    >
+      <Header transparent={true} />
       <div className="w-full max-w-md mx-auto flex-1 flex flex-col">
         <header className="mb-12">
           <div className="h-1.5 w-full bg-gray-100 rounded-full overflow-hidden mb-8">
@@ -126,7 +140,7 @@ export default function RecordScreen() {
           </motion.div>
 
           <div className="w-full mb-12">
-            <HintBar hint={hint} />
+            <HintBar hint={hint} tongue={tongue} lips={lips} />
             
             {transcript && (
               <motion.div

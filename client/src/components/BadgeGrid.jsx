@@ -9,7 +9,6 @@ const BADGE_MAP = {
   score_95: { label: "Near perfect", color: "bg-purple-100 text-purple-700 border-purple-200" },
   mastery_first: { label: "First mastery", color: "bg-yellow-100 text-yellow-700 border-yellow-200" },
   mastery_5: { label: "Phoneme pro", color: "bg-indigo-100 text-indigo-700 border-indigo-200" },
-  level_3: { label: "Rising star", color: "bg-cyan-100 text-cyan-700 border-cyan-200" },
 };
 
 export default function BadgeGrid({ earnedBadges }) {

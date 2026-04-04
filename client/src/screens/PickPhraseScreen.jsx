@@ -33,7 +33,6 @@ const Tree = ({ className }) => (
 );
 
 export default function PickPhraseScreen() {
-  const [level, setLevel] = useState('easy');
   const [phrases, setPhrases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showCustomInput, setShowCustomInput] = useState(false);
@@ -48,7 +47,7 @@ export default function PickPhraseScreen() {
     const fetchPhrases = async () => {
       setLoading(true);
       try {
-        const data = await phraseApi.getPhrases(level, userId);
+        const data = await phraseApi.getPhrases(userId);
         setPhrases(data);
       } catch (err) {
         console.error(err);
@@ -57,7 +56,7 @@ export default function PickPhraseScreen() {
       }
     };
     fetchPhrases();
-  }, [level, userId]);
+  }, [userId]);
 
   const handlePrompt = () => {
     if (phrases.length > 0) {
@@ -69,9 +68,13 @@ export default function PickPhraseScreen() {
 
   const handleCustomUse = () => {
     if (!customPhrase.trim()) return;
-    window.alert(
-      'The live API only accepts words from your bank (use "Give me a prompt"). Custom phrases are not wired yet.',
-    );
+    setCurrentPhrase({
+      id: `custom-${Date.now()}`,
+      word: customPhrase.trim(),
+      ipa: null,
+      phonemic: null,
+    });
+    navigate('/hear');
   };
 
   return (
@@ -86,7 +89,7 @@ export default function PickPhraseScreen() {
       <Header transparent={true} />
 
       {/* Main Content */}
-      <div className="relative z-10 flex flex-col items-center w-full max-w-2xl">
+      <div className="relative z-10 flex flex-col items-center w-full max-w-2xl mt-auto pb-4">
         {/* Speech Bubble */}
         <div className="bg-white border-4 border-[#5d4037] rounded-[40px] px-12 py-6 mb-8 relative shadow-lg">
           <p className="text-2xl font-black text-[#333]">Hi! What would you like to work on today?</p>

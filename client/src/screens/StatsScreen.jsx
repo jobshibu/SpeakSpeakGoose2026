@@ -6,7 +6,8 @@ import { Loader2, Award, Zap, Calendar, Target } from 'lucide-react';
 import XPBar from '../components/XPBar';
 import BadgeGrid from '../components/BadgeGrid';
 import Header from '../components/Header';
-import statsBg from '../assets/Statsbackrgoundpudated.jpg';
+import statsBg from '../assets/Newstatsbackground.jpg';
+import nestWithEgg from '../assets/nestwithegg.06.05_PM-removebg-preview.png';
 
 export default function StatsScreen() {
   const [loading, setLoading] = useState(true);
@@ -56,12 +57,12 @@ export default function StatsScreen() {
         <Header transparent={true} />
         <header className="mb-12 flex items-center gap-6">
           <div className="w-20 h-20 bg-blue-600 rounded-3xl flex items-center justify-center text-white shadow-xl shadow-blue-100">
-            <span className="text-3xl font-black">{userStats.level}</span>
+            <Award size={40} />
           </div>
           <div>
-            <h1 className="text-3xl font-black text-gray-900">Level {userStats.level}</h1>
+            <h1 className="text-3xl font-black text-gray-900">Your Progress</h1>
             <p className="text-gray-500 font-bold uppercase text-xs tracking-widest">
-              {userStats.level < 5 ? 'Rising Star' : userStats.level < 10 ? 'Phoneme Pro' : 'Pronunciation Master'}
+              Pronunciation Journey
             </p>
           </div>
         </header>
@@ -88,6 +89,20 @@ export default function StatsScreen() {
             Your Badges
           </h2>
           <BadgeGrid earnedBadges={userStats.badges || []} />
+        </section>
+
+        <section className="mb-12">
+          <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 border-b-4 border-b-blue-200 flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-black text-gray-900 mb-2">Your Nestbox</h2>
+              <p className="text-gray-500 font-medium">Keep practicing to hatch new rewards!</p>
+            </div>
+            <img 
+              src={nestWithEgg} 
+              alt="Nest with egg" 
+              className="w-32 h-32 object-contain drop-shadow-xl hover:scale-105 transition-transform cursor-pointer"
+            />
+          </div>
         </section>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

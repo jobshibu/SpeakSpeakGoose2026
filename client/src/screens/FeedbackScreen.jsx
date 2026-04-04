@@ -7,6 +7,7 @@ import useAppStore from '../store';
 import ScoreCircle from '../components/ScoreCircle';
 import PhonemePill from '../components/PhonemePill';
 import Header from '../components/Header';
+import coachBg from '../assets/Coachbackground.jpg';
 
 export default function FeedbackScreen() {
   const [saving, setSaving] = useState(true);
@@ -62,7 +63,14 @@ export default function FeedbackScreen() {
 
   if (saving) {
     return (
-      <div className="min-h-screen bg-white flex flex-col items-center justify-center p-8">
+      <div 
+        className="min-h-screen flex flex-col items-center justify-center pt-2 px-6"
+        style={{ 
+          backgroundImage: `url(${coachBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}
+      >
         <Loader2 className="animate-spin text-blue-600 mb-4" size={48} />
         <p className="text-xl font-bold text-gray-900">Generating Feedback...</p>
       </div>
@@ -70,9 +78,17 @@ export default function FeedbackScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-32 pt-8 px-6">
+    <div 
+      className="min-h-screen pb-32 pt-2 px-6"
+      style={{ 
+        backgroundImage: `url(${coachBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed'
+      }}
+    >
       <div className="max-w-4xl mx-auto">
-        <Header dark />
+        <Header transparent={true} />
         <header className="text-center mb-12">
           <span className="inline-block px-4 py-1.5 bg-green-50 text-green-600 rounded-full text-xs font-black uppercase tracking-widest mb-6">
             Practice Complete
@@ -115,20 +131,13 @@ export default function FeedbackScreen() {
           </div>
 
           {sessionResult && (
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col items-center text-center">
                 <div className="w-12 h-12 bg-yellow-50 text-yellow-600 rounded-2xl flex items-center justify-center mb-3">
                   <Star fill="currentColor" />
                 </div>
                 <p className="text-2xl font-black text-gray-900">+{sessionResult.earnedXP ?? sessionResult.xp} XP</p>
                 <p className="text-xs font-bold text-gray-400 uppercase">Earned</p>
-              </div>
-              <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-100 flex flex-col items-center text-center">
-                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mb-3">
-                  <TrendingUp />
-                </div>
-                <p className="text-2xl font-black text-gray-900">Lvl {sessionResult.level}</p>
-                <p className="text-xs font-bold text-gray-400 uppercase">Current Level</p>
               </div>
             </div>
           )}
@@ -174,12 +183,10 @@ export default function FeedbackScreen() {
                   <Award size={64} />
                 </div>
                 <h2 className="text-4xl font-black mb-4">
-                  {sessionResult.newLevel ? "Level Up!" : "New Badge!"}
+                  New Badge!
                 </h2>
                 <p className="text-xl text-blue-100 mb-12">
-                  {sessionResult.newLevel 
-                    ? `You've reached Level ${sessionResult.level}!` 
-                    : `You earned: ${sessionResult.badgesEarned[0]}`}
+                  You earned: {sessionResult.badgesEarned[0]}
                 </p>
                 <button
                   onClick={() => setShowCelebration(false)}

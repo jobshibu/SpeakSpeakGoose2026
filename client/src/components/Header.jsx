@@ -11,23 +11,29 @@ export default function Header({ dark = false, showLogo = true, showStats = true
 
   if (transparent) {
     return (
-      <div className="relative z-10 w-full max-w-4xl flex justify-end items-center mb-12">
+      <div className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-6 py-4">
+        <h1 className="text-4xl font-black text-transparent select-none">
+          SpeakSpeak Goose
+        </h1>
         <div className="flex items-center gap-6">
-          <div 
+          <span
             onClick={() => navigate('/pick')}
-            className="w-24 h-8 cursor-pointer"
-            aria-label="Practice"
-          />
-          <div 
+            className="text-transparent font-black text-xl cursor-pointer select-none"
+          >
+            Practice
+          </span>
+          <span
             onClick={() => navigate('/stats')}
-            className="w-32 h-8 cursor-pointer"
-            aria-label="Stats and Flock"
-          />
-          <div 
+            className="text-transparent font-black text-xl cursor-pointer select-none"
+          >
+            Stats and Flock
+          </span>
+          <span
             onClick={logout}
-            className="w-20 h-8 cursor-pointer"
-            aria-label="Logout"
-          />
+            className="text-transparent font-black text-xl cursor-pointer select-none"
+          >
+            Logout
+          </span>
         </div>
       </div>
     );

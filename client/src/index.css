@@ -4,6 +4,19 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  /* Overriding blue with the requested teal color (#2596be) */
+  --color-blue-50: #f0f8fb;
+  --color-blue-100: #dcf0f6;
+  --color-blue-200: #bde1ee;
+  --color-blue-300: #8fcbe2;
+  --color-blue-400: #5aaed1;
+  --color-blue-500: #3a94bc;
+  --color-blue-600: #2596be;
+  --color-blue-700: #1e7a9b;
+  --color-blue-800: #1d6581;
+  --color-blue-900: #1c546b;
+  --color-blue-950: #123646;
 }
 
 @layer base {

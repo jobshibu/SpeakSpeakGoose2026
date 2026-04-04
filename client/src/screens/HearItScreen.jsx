@@ -6,6 +6,7 @@ import { practiceApi } from '../api';
 import { useAudio } from '../hooks/useAudio';
 import useAppStore from '../store';
 import Header from '../components/Header';
+import coachBg from '../assets/Coachbackground.jpg';
 
 export default function HearItScreen() {
   const [loading, setLoading] = useState(false);
@@ -31,8 +32,15 @@ export default function HearItScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col items-center p-8">
-      <Header dark />
+    <div 
+      className="min-h-screen flex flex-col items-center pt-2 px-6"
+      style={{ 
+        backgroundImage: `url(${coachBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}
+    >
+      <Header transparent={true} />
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}

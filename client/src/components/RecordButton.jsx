@@ -27,10 +27,7 @@ export default function RecordButton({ isRecording, onStart, onStop }) {
       </AnimatePresence>
 
       <button
-        onMouseDown={onStart}
-        onMouseUp={onStop}
-        onTouchStart={(e) => { e.preventDefault(); onStart(); }}
-        onTouchEnd={(e) => { e.preventDefault(); onStop(); }}
+        onClick={isRecording ? onStop : onStart}
         className={`relative z-10 w-24 h-24 rounded-full flex items-center justify-center transition-all duration-200 active:scale-90 shadow-lg ${
           isRecording
             ? 'bg-red-500 text-white shadow-red-200'
@@ -39,9 +36,9 @@ export default function RecordButton({ isRecording, onStart, onStop }) {
       >
         <Mic size={40} className={isRecording ? 'animate-pulse' : ''} />
       </button>
-      
+
       <p className="absolute -bottom-10 text-sm font-medium text-gray-500 whitespace-nowrap">
-        {isRecording ? 'Release to submit' : 'Hold to record'}
+        {isRecording ? 'Tap to stop' : 'Tap to record'}
       </p>
     </div>
   );
