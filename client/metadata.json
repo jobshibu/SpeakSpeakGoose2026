@@ -1,0 +1,5 @@
+{
+  "name": "SpeakSpeak Goose",
+  "description": "A friendly AI pronunciation coach for ESL learners with real-time feedback and gamified progress tracking.",
+  "requestFramePermissions": ["microphone"]
+}
