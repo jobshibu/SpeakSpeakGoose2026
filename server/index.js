@@ -10,6 +10,7 @@ const attemptRoutes  = require('./routes/attempt');
 const generateRoutes = require('./routes/generate');
 const sessionRoutes  = require('./routes/session');
 const statsRoutes    = require('./routes/stats');
+const gameRoutes     = require('./routes/game');
 const { general, auth: authLimiter, ai, tts: ttsLimiter } = require('./middleware/rateLimiter');
 
 const app = express();
@@ -34,6 +35,7 @@ app.use('/api/attempt',        ai,          attemptRoutes);
 app.use('/api/generate-words', ai,          generateRoutes);
 app.use('/api/session',        sessionRoutes);
 app.use('/api/stats',          statsRoutes);
+app.use('/api/game',           gameRoutes);
 
 // ── Health check ──────────────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
